@@ -1,34 +1,55 @@
+<!-- index.php -->
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Welcome • PHP CRUD App</title>
+  <title>User Management Dashboard</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-  <style>
-    body { background: #f5f5f5; }
-    .container { max-width: 500px; margin: 80px auto; }
-    .card { box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
-    .btn-block + .btn-block { margin-top: 1rem; }
-  </style>
 </head>
 <body>
-  <div class="container">
-    <div class="card">
-      <div class="card-header bg-primary text-white text-center">
-        <h2>PHP CRUD Dashboard</h2>
-      </div>
-      <div class="card-body">
-        <p class="text-center mb-4">Choose an action:</p>
-        <a href="index.php" class="btn btn-success btn-block">User Management (View/Manage Records)</a>
-        <a href="insert.php" class="btn btn-info btn-block">Add New User</a>
-        <a href="read.php" class="btn btn-secondary btn-block">User Details (View Page)</a>
-        <!-- <a href="edit.php" class="btn btn-warning btn-block">Edit User (Direct Link Example)</a> -->
-        <hr>
-        <p class="text-muted text-center mb-0" style="font-size: 0.95em;">Powered by PHP &amp; MySQL</p>
-      </div>
+  <div class="container mt-5">
+    <h1 class="mb-4">User Management Dashboard</h1>
+    <div class="mb-3">
+      <a href="insert.php" class="btn btn-primary">Add New User</a>
     </div>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Mobile</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php
+        include('dbconnection.php');
+        $ret = $con->query("SELECT * FROM tblusers");
+        $cnt = 1;
+        if ($ret && $ret->num_rows > 0) {
+            while ($row = $ret->fetch_assoc()) {
+                echo '<tr>';
+                echo '<td>' . $cnt . '</td>';
+                echo '<td>' . htmlspecialchars($row['FirstName']) . ' ' . htmlspecialchars($row['LastName']) . '</td>';
+                echo '<td>' . htmlspecialchars($row['Email']) . '</td>';
+                echo '<td>' . htmlspecialchars($row['MobileNumber']) . '</td>';
+                echo '<td>' . htmlspecialchars($row['CreationDate']) . '</td>';
+                echo '<td>
+                        <a href="read.php?viewid=' . intval($row['ID']) . '" class="btn btn-info btn-sm">View</a>
+                        <a href="edit.php?editid=' . intval($row['ID']) . '" class="btn btn-warning btn-sm">Edit</a>
+                        <a href="index.php?delid=' . intval($row['ID']) . '" class="btn btn-danger btn-sm" onclick="return confirm(\'Delete this user?\')">Delete</a>
+                      </td>';
+                echo '</tr>';
+                $cnt++;
+            }
+        } else {
+            echo '<tr><td colspan="6">No records found</td></tr>';
+        }
+        ?>
+      </tbody>
+    </table>
   </div>
 </body>
-      </html>
-      
+</html>
